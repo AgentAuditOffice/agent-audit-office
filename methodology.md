@@ -80,7 +80,7 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - **x402 以外の支払い**: x402 サブグラフは仲介業者（facilitator）経由の決済だけを記録する。直接の USDC 送金は含まない。
 - **観測環境**: GitHub Actions はデータセンターの IP から接続するため、一部のサイト（例: basescan.org、x.com）は 403 を返し、auth_required と判定される。
 - **github.com 宛ての接続先**は判定対象外。
-- **観測の時刻と間隔の不均一（初回レポート）**: 定点観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定だが、初回レポートの観測期間中は GitHub Actions の定期実行に最大 3 時間半程度の遅延や実行の欠落があった。欠落の一部は手動実行で補ったため、観測の時刻と間隔は均一ではない。安定稼働の判定は「観測 6 回以上 かつ 応答率 7/9 以上」で行う。実際の観測日時は `results/probes/` フォルダのファイル名（日本時間の開始時刻）で確認できる。
+- **観測の時刻と間隔の不均一（初回レポート）**: 定点観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定だが、初回レポートの観測期間中は GitHub Actions の定期実行に最大 3 時間半程度の遅延や実行の欠落があった。欠落の一部は手動実行で補ったため、観測の時刻と間隔は均一ではない。安定稼働の判定は「観測 6 回以上 かつ 応答率 7/9 以上」で行う。実際の観測日時と回ごとの集計は `results/summary.md` の「観測の記録」で確認できる。
 - **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測 6 回以上の条件を満たすエージェントがいないため、`--min-runs` で回数の下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 回のまま行う。
 
 ---
@@ -157,5 +157,5 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 - **Non-x402 payments**: the x402 subgraph only records facilitator-settled payments. Plain USDC transfers are not included.
 - **Observation network**: GitHub Actions connects from data-center IPs, and some sites (e.g. basescan.org, x.com) answer 403, which is recorded as auth_required.
 - **github.com endpoints** are not judged.
-- **Uneven observation times (first report)**: observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST). During the first report's observation period, however, GitHub Actions scheduled runs were delayed by up to about 3.5 hours or skipped entirely. Some missing runs were filled with manual runs, so observation times and intervals are uneven. Stability is still judged as "at least 6 observed runs and alive in at least 7/9 of them". The actual observation times are the file names (start time in JST) in the `results/probes/` folder.
+- **Uneven observation times (first report)**: observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST). During the first report's observation period, however, GitHub Actions scheduled runs were delayed by up to about 3.5 hours or skipped entirely. Some missing runs were filled with manual runs, so observation times and intervals are uneven. Stability is still judged as "at least 6 observed runs and alive in at least 7/9 of them". The actual observation times and per-run figures are in the "Observation record" section of `results/summary.md`.
 - **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the 6-run minimum. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6.

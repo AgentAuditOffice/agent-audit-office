@@ -33,6 +33,19 @@ Run / 観測回: 2026-11-14T2129 JST
 | WEB | 2,749 | 7,297 | 37.7% |
 | OASF | 68 | 176 | 38.6% |
 
+## Observation record / 観測の記録
+
+Every full observation run (v3 criteria). Scheduled three times a day (08:07 / 14:07 / 20:07 JST); actual start times vary because GitHub Actions scheduled runs were delayed or skipped and some were filled by manual runs. Rates are over judged endpoints. / v3 基準の全件の観測回。予定は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）だが、GitHub Actions の定期実行の遅延・欠落と手動実行による補完のため、実際の開始時刻は一定でない。生存率は判定対象のエンドポイントに対する割合。
+
+| # | Start (JST) / 開始日時（日本時間） | Alive endpoints / 生存エンドポイント | Rate / 生存率 | Alive agents / 生存エージェント | Used for these grades / 今回の格付けに使用 |
+|---:|---|---:|---:|---:|:---:|
+| 1 | 2026-11-14 17:59 | 3,926 | 28.1% | 3,215 | ✓ |
+| 2 | 2026-11-14 21:29 | 3,933 | 28.2% | 3,218 | ✓ |
+| 3 | 2026-11-15 11:33 | 3,931 | 28.2% | 3,217 |  |
+| 4 | 2026-11-15 21:39 | 3,929 | 28.1% | 3,220 |  |
+| 5 | 2026-11-16 11:41 | 3,934 | 28.2% | 3,220 |  |
+| 6 | 2026-11-16 21:52 | 3,935 | 28.2% | 3,221 |  |
+
 ## Feedback contamination / 評価の汚染率
 
 | Excluded as / 除外の理由 | Records / 件数 | Share / 割合 |
