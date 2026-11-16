@@ -1,0 +1,159 @@
+# 格付けの判定方法 / Rating Methodology
+
+対象: Base Mainnet 上の ERC-8004（agent0）登録エージェント
+判定スクリプト: `score.py`（条件は冒頭の `CONFIG` に集約）
+
+Scope: ERC-8004 (agent0) agents registered on Base Mainnet.
+Script: `score.py` (all thresholds live in the `CONFIG` block at the top).
+
+---
+
+## 日本語
+
+### 1. データの出所
+
+| データ | 取得元 | スクリプト |
+|---|---|---|
+| エージェントの登録情報（owner・agentWallet・接続先・名前・説明） | The Graph の agent0 サブグラフ | `fetch_agents.py` |
+| 接続先の稼働状況 | 各エンドポイントへの HTTP リクエスト（1 日 3 回、日本時間 8:07 / 14:07 / 20:07、GitHub Actions） | `probe.py` |
+| x402 の支払い | The Graph Network 上の x402 Base サブグラフ（`Cb56epg3EvQ6JRpPfknbkM54QxpzTvLa7mwKNQQfUyoj`） | `fetch_payments.py` |
+| フィードバック（評価） | agent0 サブグラフの Feedback | `fetch_feedback.py` |
+
+x402 サブグラフは The Graph の公式ドキュメントではなく第三者（Graph Advocate）の資料に記載されていたもの。抽出した 25 件の支払いを Base の公開 RPC の取引記録と照合し、受取先・金額・送金元がすべて一致することを確認している（`verify_payments.py`）。
+
+### 2. 稼働状況の判定（v3 基準、1 回の観測ごと）
+
+| 種類 | 送るリクエスト | 生存（alive）とみなす応答 |
+|---|---|---|
+| MCP | `initialize` の JSON-RPC POST | 2xx かつ JSON-RPC の `result` を含む |
+| A2A | `/.well-known/agent.json` の GET（URL が既に card を指す場合はそのまま） | 2xx かつ `name` を含む JSON |
+| Web / OASF | GET | 2xx |
+
+- **alive_paid**: 402 で x402 の支払い条件（`PAYMENT-REQUIRED` ヘッダー、または本文の `x402Version` / `accepts`）を返す → 生存（有料）
+- **auth_required**: 401 / 403、**uncertain**: 400 / 405 / 条件のない 402 → 生存には数えない
+- **dead**: 404・その他の 4xx・5xx・本文が条件を満たさない 2xx・タイムアウト・DNS エラー・接続失敗
+- 対象外: github.com 宛て（判定しない）、内部向けアドレス（アクセスしない）、不正な URL
+- エージェントは、接続先のどれか 1 つが生存ならその回は生存
+- 本文は最大 64KB を JSON として解析するだけで、保存・実行はしない
+
+### 3. 前提の定義
+
+**安定稼働** — 定点観測（v3 基準の全件実行）で、**観測回数が 6 回以上**、かつ生存だった回の割合が **7/9（約 77.8%）以上**。
+
+- 本番の想定は 9 回中 7 回以上。GitHub Actions の定期実行は遅延・スキップがありうるため、回数の下限と割合の両方で判定する。
+- 生存には alive_paid を含み、auth_required と uncertain は含まない。
+- 分母はそのエージェントが観測された回数。
+
+**第三者からの支払い** — 過去 90 日の x402 支払いのうち、支払人が次のいずれでもないもの（A には、この支払人が**異なる 3 人以上**必要）:
+- そのエージェントの owner 本人
+- 同じ owner の他エージェントの agentWallet
+- 他の登録エージェントの agentWallet（全約 118 万体の登録情報で照合）
+
+上記に当たる支払いを「自作自演の疑いのある支払い」とし、受取額に占める割合を計算する。
+
+**健全な評価** — 次を除いた評価が、**異なる送り手 3 人以上**から付いていること:
+1. `tag1` または `tag2` が `miner-vouch` / `botcoin`
+2. 値が 0〜100 の範囲外
+3. いずれかの 1 時間に 10 件以上送ったことのある送り手の評価（すべて）
+4. 相互評価のペア: A の関係者が B を評価し、B の関係者が A を評価している場合、その両方向の評価
+5. 自己評価: 送り手が評価先の owner 本人、または同じ owner の agentWallet
+
+相互評価と自己評価は **owner 単位**で判定する。送り手アドレスは「owner 本人として」または「agentWallet として」代表する owner に対応づける。同じ owner の別エージェントを経由した相互評価も検出できる。自己評価の除外は条件表に明記されていないが、「異なる第三者からの評価」という趣旨に合わせて加えた（`CONFIG["exclude_self"]` で切り替え可能）。
+
+### 4. 格付け（上から順に判定し、最初に当てはまったもの）
+
+| 格付け | 条件 |
+|---|---|
+| **A** | 安定稼働 ＋ 過去 90 日に**異なる 3 人以上**の第三者からの支払いあり ＋ 自作自演の疑いのある支払いが受取額の 50% 未満 |
+| **B** | 安定稼働 ＋（観測期間中に alive_paid の接続先あり、または 健全な評価あり） |
+| **C** | 安定稼働のみ |
+| **対象外** | 上記以外（不安定・停止・接続先なし） |
+
+「alive_paid の接続先あり」は、観測期間中に 1 回以上 alive_paid と判定された接続先があること。
+
+**同じ財布を共有するエージェント**は、支払い実績を 1 つの事業体のものとして扱う。A の条件を満たしたエージェントが同じ agentWallet に複数ある場合、A はその中の 1 体だけに付け、残りは B にする。代表の 1 体は、稼働率 → 生存回数 → 有料接続先の回数 → 登録の古さ（agentId が小さい順）で選ぶ。
+
+### 5. 既知の限界
+
+- **ウォレットの共有**: 支払いは受取ウォレット単位で記録される。同じ agentWallet を共有するエージェントは 1 つの事業体として扱い、A は 1 体だけに付ける（B 以下の判定は各エージェントの実績のまま）。
+- **自作自演の検出範囲**: 登録済みの owner・agentWallet との一致だけを見る。未登録の別の財布を使った自作自演は検出できない。
+- **x402 以外の支払い**: x402 サブグラフは仲介業者（facilitator）経由の決済だけを記録する。直接の USDC 送金は含まない。
+- **観測環境**: GitHub Actions はデータセンターの IP から接続するため、一部のサイト（例: basescan.org、x.com）は 403 を返し、auth_required と判定される。
+- **github.com 宛ての接続先**は判定対象外。
+- **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測 6 回以上の条件を満たすエージェントがいないため、`--min-runs` で回数の下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 回のまま行う。
+
+---
+
+## English
+
+### 1. Data sources
+
+| Data | Source | Script |
+|---|---|---|
+| Agent registry (owner, agentWallet, endpoints, name, description) | The Graph, agent0 subgraph | `fetch_agents.py` |
+| Endpoint liveness | One HTTP request per endpoint, three times a day (08:07 / 14:07 / 20:07 JST) on GitHub Actions | `probe.py` |
+| x402 payments | x402 Base subgraph on The Graph Network (`Cb56epg3EvQ6JRpPfknbkM54QxpzTvLa7mwKNQQfUyoj`) | `fetch_payments.py` |
+| Feedback | agent0 subgraph, `Feedback` entity | `fetch_feedback.py` |
+
+The x402 subgraph ID comes from third-party documentation (Graph Advocate), not The Graph's official docs. A sample of 25 payments was checked against Base public RPC transaction receipts, and recipient, amount and payer matched in all 25 (`verify_payments.py`).
+
+### 2. Liveness per observation (v3 criteria)
+
+| Kind | Request | Counted as alive when |
+|---|---|---|
+| MCP | JSON-RPC `initialize` POST | 2xx and the body contains a JSON-RPC `result` |
+| A2A | GET `/.well-known/agent.json` (or the URL as-is if it already points to a card) | 2xx and a JSON body with `name` |
+| Web / OASF | GET | 2xx |
+
+- **alive_paid**: HTTP 402 with x402 payment terms (`PAYMENT-REQUIRED` header, or `x402Version` / `accepts` in the body). Counted as alive (paid).
+- **auth_required** (401/403) and **uncertain** (400, 405, or 402 without terms) are not counted as alive.
+- **dead**: 404, other 4xx, 5xx, 2xx without a valid body, timeout, DNS error, or connection failure.
+- Not judged: github.com targets (skipped), internal addresses (never contacted), invalid URLs.
+- An agent is alive in a run if any of its endpoints is alive.
+- Bodies are parsed as JSON (max 64KB) only. They are never stored or executed.
+
+### 3. Definitions
+
+**Stable** — the agent was observed in **at least 6** full v3 runs and was alive in at least **7/9 (≈77.8%)** of them.
+
+- The plan is 7 of 9 runs. Scheduled GitHub Actions runs can be delayed or skipped, so both a minimum run count and a ratio are required.
+- alive_paid counts as alive; auth_required and uncertain do not.
+- The denominator is the number of runs in which the agent was observed.
+
+**Third-party payment** — an x402 payment in the last 90 days whose payer is none of the following (grade A requires **at least 3 distinct** such payers):
+- the agent's owner
+- the agentWallet of another agent with the same owner
+- the agentWallet of any other registered agent (checked against all ~1.18M registrations)
+
+Payments that do match one of these are "suspicious", and their share of the total amount received is computed.
+
+**Healthy feedback** — feedback from **at least 3 distinct senders** remains after removing:
+1. records whose `tag1` or `tag2` is `miner-vouch` or `botcoin`
+2. values outside 0–100
+3. all feedback from any sender that ever sent 10 or more within one hour
+4. mutual-rating pairs: if A's side rates B and B's side rates A, both directions are removed
+5. self-rating: the sender is the target's owner or an agentWallet of the same owner
+
+Mutual and self-rating are evaluated **per owner**. A sender address maps to the owners it represents, either as the owner itself or as an agentWallet. This also catches mutual rating routed through different agents of the same owner. Excluding self-rating is not in the original table; it was added to match the intent of "distinct third parties" and can be switched off with `CONFIG["exclude_self"]`.
+
+### 4. Grades (evaluated top to bottom; the first match wins)
+
+| Grade | Condition |
+|---|---|
+| **A** | Stable + third-party payments from **at least 3 distinct payers** in the last 90 days + suspicious payments are less than 50% of the amount received |
+| **B** | Stable + (an endpoint judged alive_paid during the observation period, or healthy feedback) |
+| **C** | Stable only |
+| **Not rated** | Everything else (unstable, dead, or no endpoint) |
+
+"An endpoint judged alive_paid" means at least one observation run judged one of the agent's endpoints alive_paid.
+
+**Agents sharing a wallet** are treated as one business for payments. If several agents with the same agentWallet qualify for A, only one gets A and the rest get B. The representative is chosen by uptime, then number of alive runs, then number of alive_paid runs, then registration age (smallest agentId).
+
+### 5. Known limitations
+
+- **Shared wallets**: payments are recorded per receiving wallet. Agents sharing an agentWallet are treated as one business and only one of them can get A (grades B and below still use each agent's own record).
+- **Self-dealing coverage**: only matches against registered owners and agentWallets. Self-dealing through unregistered wallets is not detected.
+- **Non-x402 payments**: the x402 subgraph only records facilitator-settled payments. Plain USDC transfers are not included.
+- **Observation network**: GitHub Actions connects from data-center IPs, and some sites (e.g. basescan.org, x.com) answer 403, which is recorded as auth_required.
+- **github.com endpoints** are not judged.
+- **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the 6-run minimum. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6.
