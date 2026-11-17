@@ -38,11 +38,13 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 
 ### 3. 前提の定義
 
-**安定稼働** — 定点観測（v3 基準の全件実行）で、**観測回数が 6 回以上**、かつ生存だった回の割合が **7/9（約 77.8%）以上**。
+**観測時点** — 定点観測（v3 基準の全件実行）のうち、前の回の開始から **60 分以内**に始まった回は、同じ「観測時点」にまとめる（続けて 60 分以内に始まった回はすべて同じ時点になる）。まとめた時点では、**その中の全回で生存した場合だけ**生存とみなす（例: 2 回をまとめたなら両方で生存が必要）。間隔の近い観測が重複して数えられるのを防ぐため。
 
-- 本番の想定は 9 回中 7 回以上。GitHub Actions の定期実行は遅延・スキップがありうるため、回数の下限と割合の両方で判定する。
+**安定稼働** — **観測時点が 6 以上**、かつ生存だった時点の割合が **7/9（約 77.8%）以上**。
+
+- 本番の想定は 9 時点中 7 時点以上。GitHub Actions の定期実行は遅延・スキップがありうるため、時点数の下限と割合の両方で判定する。
 - 生存には alive_paid を含み、auth_required と uncertain は含まない。
-- 分母はそのエージェントが観測された回数。
+- 分母はそのエージェントが観測された時点の数。
 
 **第三者からの支払い** — 過去 90 日の x402 支払いのうち、支払人が次のいずれでもないもの（A には、この支払人が**異なる 3 人以上**必要）:
 - そのエージェントの owner 本人
@@ -80,8 +82,8 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - **x402 以外の支払い**: x402 サブグラフは仲介業者（facilitator）経由の決済だけを記録する。直接の USDC 送金は含まない。
 - **観測環境**: GitHub Actions はデータセンターの IP から接続するため、一部のサイト（例: basescan.org、x.com）は 403 を返し、auth_required と判定される。
 - **github.com 宛ての接続先**は判定対象外。
-- **観測の時刻と間隔の不均一（初回レポート）**: 定点観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定だが、初回レポートの観測期間中は GitHub Actions の定期実行に最大 3 時間半程度の遅延や実行の欠落があった。欠落の一部は手動実行で補ったため、観測の時刻と間隔は均一ではない。安定稼働の判定は「観測 6 回以上 かつ 応答率 7/9 以上」で行う。実際の観測日時と回ごとの集計は `results/summary.md` の「観測の記録」で確認できる。
-- **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測 6 回以上の条件を満たすエージェントがいないため、`--min-runs` で回数の下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 回のまま行う。
+- **観測の時刻と間隔の不均一（初回レポート）**: 定点観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定だが、初回レポートの観測期間中は GitHub Actions の定期実行に最大 3 時間半程度の遅延や実行の欠落があった。欠落の一部は手動実行で補ったため、観測の時刻と間隔は均一ではない。間隔の近い回は観測時点としてまとめたうえで、安定稼働を「観測時点 6 以上 かつ 生存率 7/9 以上」で判定する。実際の観測日時、回ごとの集計、どの回をまとめたかは `results/summary.md` の「観測の記録」で確認できる。
+- **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測時点 6 以上の条件を満たすエージェントがいないため、`--min-runs` で下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 時点のまま行う。
 
 ---
 
@@ -115,11 +117,13 @@ The x402 subgraph ID comes from third-party documentation (Graph Advocate), not 
 
 ### 3. Definitions
 
-**Stable** — the agent was observed in **at least 6** full v3 runs and was alive in at least **7/9 (≈77.8%)** of them.
+**Observation point** — a full v3 run that starts **within 60 minutes** of the previous run's start is merged into the same observation point, so a chain of runs each within 60 minutes of the last becomes one point. At a merged point, an agent counts as alive **only if it was alive in every run** of that point (for two merged runs, both must be alive). This keeps closely spaced runs from being counted twice.
 
-- The plan is 7 of 9 runs. Scheduled GitHub Actions runs can be delayed or skipped, so both a minimum run count and a ratio are required.
+**Stable** — the agent was observed at **at least 6 observation points** and was alive at least **7/9 (≈77.8%)** of them.
+
+- The plan is 7 of 9 points. Scheduled GitHub Actions runs can be delayed or skipped, so both a minimum number of points and a ratio are required.
 - alive_paid counts as alive; auth_required and uncertain do not.
-- The denominator is the number of runs in which the agent was observed.
+- The denominator is the number of points at which the agent was observed.
 
 **Third-party payment** — an x402 payment in the last 90 days whose payer is none of the following (grade A requires **at least 3 distinct** such payers):
 - the agent's owner
@@ -157,5 +161,5 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 - **Non-x402 payments**: the x402 subgraph only records facilitator-settled payments. Plain USDC transfers are not included.
 - **Observation network**: GitHub Actions connects from data-center IPs, and some sites (e.g. basescan.org, x.com) answer 403, which is recorded as auth_required.
 - **github.com endpoints** are not judged.
-- **Uneven observation times (first report)**: observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST). During the first report's observation period, however, GitHub Actions scheduled runs were delayed by up to about 3.5 hours or skipped entirely. Some missing runs were filled with manual runs, so observation times and intervals are uneven. Stability is still judged as "at least 6 observed runs and alive in at least 7/9 of them". The actual observation times and per-run figures are in the "Observation record" section of `results/summary.md`.
-- **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the 6-run minimum. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6.
+- **Uneven observation times (first report)**: observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST). During the first report's observation period, however, GitHub Actions scheduled runs were delayed by up to about 3.5 hours or skipped entirely. Some missing runs were filled with manual runs, so observation times and intervals are uneven. Closely spaced runs are merged into observation points, and stability is judged as "at least 6 observation points and alive at 7/9 or more of them". The actual observation times, per-run figures, and which runs were merged are in the "Observation record" section of `results/summary.md`.
+- **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the minimum of 6 observation points. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6 points.
