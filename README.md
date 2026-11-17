@@ -26,10 +26,15 @@ Base Mainnet に ERC-8004（agent0）で登録された AI エージェントに
 | [results/ratings_AB.csv](results/ratings_AB.csv) | 格付け A・B のエージェント一覧（名前・接続先・説明・判定根拠） |
 | [results/summary.md](results/summary.md) | 格付け別の件数、稼働率、評価の汚染率などの集計値 |
 | [methodology.md](methodology.md) | 判定方法（日本語・英語） |
+| [results/ratings_A.png](results/ratings_A.png) | 格付け A の一覧（画像） |
 
 - C・対象外の個別エージェントは掲載していません（件数のみ summary.md に記載）。
 - すべてオンチェーンの公開情報と、各エンドポイントへの HTTP リクエストの結果に基づく自動判定です。投資や取引の推奨ではありません。
 - 誤りの指摘は GitHub の Issues にお寄せください。
+
+### ライセンス
+
+データと文書は [CC BY 4.0](LICENSE) で提供します。利用の際は「Agent Audit Office (AAO)」の表示をお願いします。
 
 ---
 
@@ -55,7 +60,12 @@ See [methodology.md](methodology.md) for the full method.
 | [results/ratings_AB.csv](results/ratings_AB.csv) | Agents graded A or B (name, endpoints, description, evidence) |
 | [results/summary.md](results/summary.md) | Aggregate figures: counts per grade, liveness rates, feedback contamination |
 | [methodology.md](methodology.md) | Method (Japanese and English) |
+| [results/ratings_A.png](results/ratings_A.png) | Grade A list (image) |
 
 - Individual agents graded C or Not rated are not listed; only their counts appear in summary.md.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
 - Please report errors through GitHub Issues.
+
+### License
+
+The data and documents are licensed under [CC BY 4.0](LICENSE). Please credit "Agent Audit Office (AAO)".

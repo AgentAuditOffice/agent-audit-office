@@ -75,6 +75,11 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 
 **同じ財布を共有するエージェント**は、支払い実績を 1 つの事業体のものとして扱う。A の条件を満たしたエージェントが同じ agentWallet に複数ある場合、A はその中の 1 体だけに付け、残りは B にする。代表の 1 体は、稼働率 → 生存回数 → 有料接続先の回数 → 登録の古さ（agentId が小さい順）で選ぶ。
 
+**注記（`ratings_AB.csv` の note 列）** — A のうち、条件の最低ラインにいるエージェントに注記を付ける。
+
+- 生存した観測時点がちょうど最低ライン（例: 9 時点中 7 時点）。観測時点の時間幅を 90 分にすると安定稼働を満たさない場合は、その旨も記す。
+- 第三者の支払人がちょうど 3 人。
+
 ### 5. 既知の限界
 
 - **ウォレットの共有**: 支払いは受取ウォレット単位で記録される。同じ agentWallet を共有するエージェントは 1 つの事業体として扱い、A は 1 体だけに付ける（B 以下の判定は各エージェントの実績のまま）。
@@ -84,6 +89,10 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - **github.com 宛ての接続先**は判定対象外。
 - **観測の時刻と間隔の不均一（初回レポート）**: 定点観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定だが、初回レポートの観測期間中は GitHub Actions の定期実行に最大 3 時間半程度の遅延や実行の欠落があった。欠落の一部は手動実行で補ったため、観測の時刻と間隔は均一ではない。間隔の近い回は観測時点としてまとめたうえで、安定稼働を「観測時点 6 以上 かつ 生存率 7/9 以上」で判定する。実際の観測日時、回ごとの集計、どの回をまとめたかは `results/summary.md` の「観測の記録」で確認できる。
 - **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測時点 6 以上の条件を満たすエージェントがいないため、`--min-runs` で下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 時点のまま行う。
+
+### 6. 次回からの変更予定
+
+- **A の条件の追加**: 「第三者からの支払いが、異なる 3 日以上（UTC の暦日）にわたること」を加える。短期間にまとめて行われた支払いだけで A になることを防ぐため。初回レポートの判定には適用していない。
 
 ---
 
@@ -154,6 +163,11 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 
 **Agents sharing a wallet** are treated as one business for payments. If several agents with the same agentWallet qualify for A, only one gets A and the rest get B. The representative is chosen by uptime, then number of alive runs, then number of alive_paid runs, then registration age (smallest agentId).
 
+**Notes (`note` column in `ratings_AB.csv`)** — A-rated agents that sit exactly at a threshold get a note.
+
+- Alive at exactly the minimum number of observation points (e.g. 7 of 9). If the agent would not be stable with a 90-minute merge window, the note says so.
+- Exactly 3 third-party payers.
+
 ### 5. Known limitations
 
 - **Shared wallets**: payments are recorded per receiving wallet. Agents sharing an agentWallet are treated as one business and only one of them can get A (grades B and below still use each agent's own record).
@@ -163,3 +177,7 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 - **github.com endpoints** are not judged.
 - **Uneven observation times (first report)**: observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST). During the first report's observation period, however, GitHub Actions scheduled runs were delayed by up to about 3.5 hours or skipped entirely. Some missing runs were filled with manual runs, so observation times and intervals are uneven. Closely spaced runs are merged into observation points, and stability is judged as "at least 6 observation points and alive at 7/9 or more of them". The actual observation times, per-run figures, and which runs were merged are in the "Observation record" section of `results/summary.md`.
 - **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the minimum of 6 observation points. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6 points.
+
+### 6. Planned changes for the next report
+
+- **Additional condition for grade A**: third-party payments must span **at least 3 distinct days** (UTC calendar days). This keeps payments bunched into a short burst from being enough for an A. It was not applied to the first report.
