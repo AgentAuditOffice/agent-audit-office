@@ -30,7 +30,7 @@ Base Mainnet に ERC-8004（agent0）で登録された AI エージェントに
 
 - C・対象外の個別エージェントは掲載していません（件数のみ summary.md に記載）。
 - すべてオンチェーンの公開情報と、各エンドポイントへの HTTP リクエストの結果に基づく自動判定です。投資や取引の推奨ではありません。
-- 誤りの指摘は GitHub の Issues にお寄せください。
+- 誤りの指摘は GitHub の Issues、または contact@agentauditoffice.com にお寄せください。
 
 ### ライセンス
 
@@ -64,7 +64,7 @@ See [methodology.md](methodology.md) for the full method.
 
 - Individual agents graded C or Not rated are not listed; only their counts appear in summary.md.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
-- Please report errors through GitHub Issues.
+- Please report errors through GitHub Issues or to contact@agentauditoffice.com.
 
 ### License
 

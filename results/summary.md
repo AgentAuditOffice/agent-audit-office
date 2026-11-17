@@ -1,6 +1,6 @@
 # Summary / 集計
 
-Generated / 作成: 2026-11-17T13:05:44 UTC  
+Generated / 作成: 2026-11-17T13:21:51 UTC  
 Observation runs / 観測回数: 11 (2026-11-14T1759 – 2026-11-17T2126 JST)  
 Reference time / 基準時刻: 2026-11-17 12:00:00 UTC (the 90-day payment window ends here / 過去 90 日の支払いはこの時刻まで)  
 Registered agents on Base / Base の登録エージェント数: 1,205,898
@@ -61,6 +61,16 @@ Runs that started within 60 minutes of the previous run share one observation po
 | Self-rating / 自己評価 | 7 | 0.0% |
 | **Total excluded / 除外合計** | **642,842** | **94.2%** |
 | Healthy feedback kept / 健全な評価として残ったもの | 39,301 | 5.8% |
+
+## Feedback scores by agent status / 状態別の評価（平均点・満点率）
+
+| Status / 状態 | Agents / 体数 | Rated agents / 評価あり | Feedback records / 評価件数 | Scored / 点数として集計 | Mean score / 平均点 | Perfect-score rate / 満点率 |
+|---|---:|---:|---:|---:|---:|---:|
+| No endpoint / 接続先なし | 1,195,147 | 156,284 | 645,278 | 253,511 | 83.5 | 58.5% |
+| Live (stable: A, B, C) / 生存（安定稼働: A・B・C） | 3,218 | 1,349 | 16,252 | 15,450 | 68.2 | 31.0% |
+| Unstable or down / 不安定・停止 | 7,533 | 2,470 | 20,613 | 20,590 | 69.6 | 8.7% |
+
+Scores are on a 0–100 scale; a perfect score is 100. Records tagged miner-vouch or botcoin and values outside 0–100 are not scored. "Live" and "unstable or down" follow the stability rule in methodology.md; "no endpoint" agents were never observed. / 点数は 0〜100、満点は 100。miner-vouch・botcoin のタグ付きと 0〜100 の範囲外の値は点数に含めない。「生存」「不安定・停止」は methodology.md の安定稼働の判定による。「接続先なし」は観測対象外。
 
 ## x402 payments (90 days to 2026-11-17 12:00:00 UTC) / x402 の支払い（基準時刻までの 90 日）
 
