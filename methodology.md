@@ -46,6 +46,8 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - 生存には alive_paid を含み、auth_required と uncertain は含まない。
 - 分母はそのエージェントが観測された時点の数。
 
+**基準時刻** — 初回レポートの基準時刻は **2026-11-17 12:00 UTC**。「過去 90 日」はこの時刻から数え（2026-08-19 12:00 〜 2026-11-17 12:00 UTC）、これより後の支払いは含めない。基準時刻は支払いの集計期間にだけ適用する。定点観測は 2026-11-17 21:26（日本時間、12:26 UTC）開始の回までを使う。
+
 **第三者からの支払い** — 過去 90 日の x402 支払いのうち、支払人が次のいずれでもないもの（A には、この支払人が**異なる 3 人以上**必要）:
 - そのエージェントの owner 本人
 - 同じ owner の他エージェントの agentWallet
@@ -133,6 +135,8 @@ The x402 subgraph ID comes from third-party documentation (Graph Advocate), not 
 - The plan is 7 of 9 points. Scheduled GitHub Actions runs can be delayed or skipped, so both a minimum number of points and a ratio are required.
 - alive_paid counts as alive; auth_required and uncertain do not.
 - The denominator is the number of points at which the agent was observed.
+
+**Reference time** — the first report's reference time is **2026-11-17 12:00 UTC**. The 90-day payment window is counted back from it (2026-08-19 12:00 to 2026-11-17 12:00 UTC), and later payments are excluded. The reference time applies only to the payment window; observations include the run that started at 21:26 JST (12:26 UTC) on 2026-11-17.
 
 **Third-party payment** — an x402 payment in the last 90 days whose payer is none of the following (grade A requires **at least 3 distinct** such payers):
 - the agent's owner

@@ -1,7 +1,8 @@
 # Summary / 集計
 
-Generated / 作成: 2026-11-17T12:52:12 UTC  
+Generated / 作成: 2026-11-17T13:05:44 UTC  
 Observation runs / 観測回数: 11 (2026-11-14T1759 – 2026-11-17T2126 JST)  
+Reference time / 基準時刻: 2026-11-17 12:00:00 UTC (the 90-day payment window ends here / 過去 90 日の支払いはこの時刻まで)  
 Registered agents on Base / Base の登録エージェント数: 1,205,898
 
 ## Grades / 格付け
@@ -61,13 +62,13 @@ Runs that started within 60 minutes of the previous run share one observation po
 | **Total excluded / 除外合計** | **642,842** | **94.2%** |
 | Healthy feedback kept / 健全な評価として残ったもの | 39,301 | 5.8% |
 
-## x402 payments (last 90 days) / x402 の支払い（過去 90 日）
+## x402 payments (90 days to 2026-11-17 12:00:00 UTC) / x402 の支払い（基準時刻までの 90 日）
 
 | Item / 項目 | Value / 値 |
 |---|---:|
 | Receiving wallets with x402 payments / x402 の支払いを受けたウォレット | 30 |
-| Payments / 支払い件数 | 2,428 |
-| Total amount (USDC) / 合計金額 | 10,828.66 |
+| Payments / 支払い件数 | 2,430 |
+| Total amount (USDC) / 合計金額 | 10,850.25 |
 | Share paid by owners or other registered agents / owner・他の登録エージェントからの支払いの割合 | 0.1% |
 | Share received by the largest single wallet / 最大の 1 ウォレットの受取割合 | 99.8% |
 
