@@ -1,6 +1,6 @@
 # Summary / 集計
 
-Generated / 作成: 2026-11-17T13:21:51 UTC  
+Generated / 作成: 2026-11-18T04:15:00 UTC  
 Observation runs / 観測回数: 11 (2026-11-14T1759 – 2026-11-17T2126 JST)  
 Reference time / 基準時刻: 2026-11-17 12:00:00 UTC (the 90-day payment window ends here / 過去 90 日の支払いはこの時刻まで)  
 Registered agents on Base / Base の登録エージェント数: 1,205,898
@@ -47,7 +47,6 @@ Every full observation run (v3 criteria). Scheduled three times a day (08:07 / 1
 | 9 | 2026-11-17 14:15 | 7 (merged / まとめ) | 3,935 | 28.2% | 3,220 | ✓ |
 | 10 | 2026-11-17 20:21 | 8 | 3,932 | 28.2% | 3,219 | ✓ |
 | 11 | 2026-11-17 21:26 | 9 | 3,932 | 28.2% | 3,218 | ✓ |
-| 12 | 2026-11-17 23:17 | 10 | 3,932 | 28.2% | 3,218 |  |
 
 Runs that started within 60 minutes of the previous run share one observation point. An agent counts as alive at a merged point only if it was alive in every run of that point. / 前の回の開始から 60 分以内に始まった回は同じ観測時点にまとめた。まとめた時点では、その中の全回で生存した場合だけ生存とみなす。
 
@@ -82,5 +81,14 @@ Scores are on a 0–100 scale; a perfect score is 100. Records tagged miner-vouc
 | Total amount (USDC) / 合計金額 | 10,850.25 |
 | Share paid by owners or other registered agents / owner・他の登録エージェントからの支払いの割合 | 0.1% |
 | Share received by the largest single wallet / 最大の 1 ウォレットの受取割合 | 99.8% |
+
+### Third-party payments before the reference time (2026-11-17 12:00:00 UTC) / 第三者からの支払い（基準時刻まで）
+
+| Window / 期間 | Payments / 件数 | Total (USDC) / 合計 | Receiving wallets / 受取ウォレット | Receiving agents / 受け取ったエージェント | Payers / 支払人 |
+|---|---:|---:|---:|---:|---:|
+| 30 days / 30 日 | 547 | 4.07 | 21 | 26 | 53 |
+| 90 days / 90 日 | 1,964 | 10,844.79 | 30 | 40 | 291 |
+
+Third-party payments exclude payers that are the agent's owner, another wallet of the same owner, or any registered agent's wallet (see methodology.md). The table above this one counts all payments. Receiving agents are agents alive in the latest observation run whose agentWallet received a payment (several agents can share one wallet). / 第三者からの支払いは、支払人がそのエージェントの owner・同じ owner の他の財布・登録エージェントの財布のいずれでもないもの（methodology.md 参照）。上の表はすべての支払いを数えている。受け取ったエージェントは、最新の観測回で生存し、その agentWallet が支払いを受けたもの（1 つの財布を複数のエージェントが共有する場合がある）。
 
 See [methodology.md](../methodology.md) for definitions. / 定義は methodology.md を参照。
