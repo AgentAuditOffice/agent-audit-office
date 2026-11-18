@@ -17,12 +17,12 @@ Base Mainnet に ERC-8004（agent0）で登録された AI エージェントに
 
 | ファイル | 内容 |
 |---|---|
-| [results/ratings_AB.csv](results/ratings_AB.csv) | 格付け A・B のエージェント一覧（名前・接続先・説明・判定根拠） |
+| [results/ratings_A.csv](results/ratings_A.csv) | 格付け A のエージェント一覧（名前・接続先・説明・判定根拠・注記） |
 | [results/summary.md](results/summary.md) | 格付け別の件数、稼働率、評価の汚染率、決済などの集計値 |
 | [methodology.md](methodology.md) | 判定方法（日本語・英語） |
 | [results/ratings_A.png](results/ratings_A.png) | 格付け A の一覧（画像） |
 
-- C・対象外の個別エージェントは掲載していません（件数のみ summary.md に記載）。
+- 個別に掲載しているのは格付け A のエージェントだけです。B・C・対象外は件数のみ summary.md に記載しています。
 - すべてオンチェーンの公開情報と、各エンドポイントへの HTTP リクエストの結果に基づく自動判定です。投資や取引の推奨ではありません。
 - 誤りの指摘は GitHub の Issues、または contact@agentauditoffice.com にお寄せください。
 

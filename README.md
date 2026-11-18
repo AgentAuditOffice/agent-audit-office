@@ -17,12 +17,12 @@ See [methodology.md](methodology.md) for the full method.
 
 | File | Description |
 |---|---|
-| [results/ratings_AB.csv](results/ratings_AB.csv) | Agents graded A or B (name, endpoints, description, evidence) |
+| [results/ratings_A.csv](results/ratings_A.csv) | Agents graded A (name, endpoints, description, evidence, notes) |
 | [results/summary.md](results/summary.md) | Aggregate figures: counts per grade, liveness rates, feedback contamination, payments |
 | [methodology.md](methodology.md) | Method (Japanese and English) |
 | [results/ratings_A.png](results/ratings_A.png) | Grade A list (image) |
 
-- Individual agents graded C or Not rated are not listed; only their counts appear in summary.md.
+- Only Grade A agents are listed individually. Agents graded B, C or Not rated appear only as counts in summary.md.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
 - Please report errors through GitHub Issues or to contact@agentauditoffice.com.
 

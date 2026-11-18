@@ -77,7 +77,7 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 
 **同じ財布を共有するエージェント**は、支払い実績を 1 つの事業体のものとして扱う。A の条件を満たしたエージェントが同じ agentWallet に複数ある場合、A はその中の 1 体だけに付け、残りは B にする。代表の 1 体は、稼働率 → 生存回数 → 有料接続先の回数 → 登録の古さ（agentId が小さい順）で選ぶ。
 
-**注記（`ratings_AB.csv` の note 列）** — A のうち、条件の最低ラインにいるエージェントに注記を付ける。
+**注記（`results/ratings_A.csv` の note 列）** — A のうち、条件の最低ラインにいるエージェントに注記を付ける。
 
 - 生存した観測時点がちょうど最低ライン（例: 9 時点中 7 時点）。観測時点の時間幅を 90 分にすると安定稼働を満たさない場合は、その旨も記す。
 - 第三者の支払人がちょうど 3 人。
@@ -98,6 +98,7 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - **注記の追加（支払人の偏り）**: 上位 1 人の支払人が、受取額の 50% を超える場合は注記する。
 - **注記の追加（新しい財布）**: 支払人のうち、そのエージェントへの初回支払いの 7 日前以降に作られた財布の割合が 50% を超える場合は注記する。財布の作成日は、自分で送った最初のトランザクション・スマートウォレットのデプロイ・最初の x402 支払いのうち最も早い日とする（入金を受けただけの日は含まない）。
 - **A の条件の追加を検討**: 「基準時刻前 30 日以内に、第三者からの支払いがあること」。過去の支払いだけで、現在は使われていないエージェントが A になることを防ぐため。
+- **評価の絞り込みの追加を検討**: 所有者の異なる複数のエージェントが同じ接続先を共有するクラスターを検出し、その評価を健全な評価から除外することを検討する。
 
 以上の変更予定は、初回レポートの格付けと注記には適用していない。
 
@@ -172,7 +173,7 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 
 **Agents sharing a wallet** are treated as one business for payments. If several agents with the same agentWallet qualify for A, only one gets A and the rest get B. The representative is chosen by uptime, then number of alive runs, then number of alive_paid runs, then registration age (smallest agentId).
 
-**Notes (`note` column in `ratings_AB.csv`)** — A-rated agents that sit exactly at a threshold get a note.
+**Notes (`note` column in `results/ratings_A.csv`)** — A-rated agents that sit exactly at a threshold get a note.
 
 - Alive at exactly the minimum number of observation points (e.g. 7 of 9). If the agent would not be stable with a 90-minute merge window, the note says so.
 - Exactly 3 third-party payers.
@@ -193,5 +194,6 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 - **New note (payer concentration)**: add a note when the top payer accounts for more than 50% of the amount received.
 - **New note (new wallets)**: add a note when more than 50% of payers used wallets created within 7 days before their first payment to the agent. A wallet's creation date is the earliest of its first self-sent transaction, its smart-wallet deployment, and its first x402 payment; merely receiving funds does not count.
 - **Under consideration for grade A**: require at least one third-party payment within 30 days before the reference time. This keeps agents that are no longer used from earning an A on past payments alone.
+- **Under consideration for the feedback filters**: detect clusters of agents with different owners that share the same endpoints, and exclude their feedback from healthy feedback.
 
 None of these planned changes were applied to the first report's grades or notes.

@@ -15,7 +15,11 @@ Registered agents on Base / Base の登録エージェント数: 1,205,898
 | Not rated (observed) / 対象外（観測した中で） | 7,533 |
 | Not rated (no endpoint, not observed) / 対象外（接続先なし） | 1,195,147 |
 
-Only agents graded A or B are listed individually ([ratings_AB.csv](ratings_AB.csv)). A・B のみ個別に掲載しています。
+Only agents graded A are listed individually ([ratings_A.csv](ratings_A.csv)). / 個別に掲載しているのは格付け A のエージェントだけです。
+
+Report #1 lists only Grade A agents individually. Most B grades rest on feedback, and we found clusters of agents sharing the same endpoints across different owners that our feedback filters did not catch. These are under review for Report #2.
+
+第 1 回レポートで個別に掲載しているのは、格付け A のエージェントだけです。B の多くは評価にもとづく格付けで、所有者の異なる複数のエージェントが同じ接続先を共有するまとまりがあり、今回の評価の絞り込みでは除外できていないことが分かりました。これらは第 2 回レポートに向けて見直しています。
 
 ## Liveness (latest run) / 稼働率（最新の観測回）
 
