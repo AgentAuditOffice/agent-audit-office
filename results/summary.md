@@ -47,6 +47,7 @@ Every full observation run (v3 criteria). Scheduled three times a day (08:07 / 1
 | 9 | 2026-11-17 14:15 | 7 (merged / まとめ) | 3,935 | 28.2% | 3,220 | ✓ |
 | 10 | 2026-11-17 20:21 | 8 | 3,932 | 28.2% | 3,219 | ✓ |
 | 11 | 2026-11-17 21:26 | 9 | 3,932 | 28.2% | 3,218 | ✓ |
+| 12 | 2026-11-17 23:17 | 10 | 3,932 | 28.2% | 3,218 |  |
 
 Runs that started within 60 minutes of the previous run share one observation point. An agent counts as alive at a merged point only if it was alive in every run of that point. / 前の回の開始から 60 分以内に始まった回は同じ観測時点にまとめた。まとめた時点では、その中の全回で生存した場合だけ生存とみなす。
 

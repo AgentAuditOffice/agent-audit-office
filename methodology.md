@@ -95,6 +95,11 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 ### 6. 次回からの変更予定
 
 - **A の条件の追加**: 「第三者からの支払いが、異なる 3 日以上（UTC の暦日）にわたること」を加える。短期間にまとめて行われた支払いだけで A になることを防ぐため。初回レポートの判定には適用していない。
+- **注記の追加（支払人の偏り）**: 上位 1 人の支払人が、受取額の 50% を超える場合は注記する。
+- **注記の追加（新しい財布）**: 支払人のうち、そのエージェントへの初回支払いの 7 日前以降に作られた財布の割合が 50% を超える場合は注記する。財布の作成日は、自分で送った最初のトランザクション・スマートウォレットのデプロイ・最初の x402 支払いのうち最も早い日とする（入金を受けただけの日は含まない）。
+- **A の条件の追加を検討**: 「基準時刻前 30 日以内に、第三者からの支払いがあること」。過去の支払いだけで、現在は使われていないエージェントが A になることを防ぐため。
+
+以上の変更予定は、初回レポートの格付けと注記には適用していない。
 
 ---
 
@@ -185,3 +190,8 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 ### 6. Planned changes for the next report
 
 - **Additional condition for grade A**: third-party payments must span **at least 3 distinct days** (UTC calendar days). This keeps payments bunched into a short burst from being enough for an A. It was not applied to the first report.
+- **New note (payer concentration)**: add a note when the top payer accounts for more than 50% of the amount received.
+- **New note (new wallets)**: add a note when more than 50% of payers used wallets created within 7 days before their first payment to the agent. A wallet's creation date is the earliest of its first self-sent transaction, its smart-wallet deployment, and its first x402 payment; merely receiving funds does not count.
+- **Under consideration for grade A**: require at least one third-party payment within 30 days before the reference time. This keeps agents that are no longer used from earning an A on past payments alone.
+
+None of these planned changes were applied to the first report's grades or notes.
