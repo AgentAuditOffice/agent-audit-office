@@ -21,7 +21,7 @@ See [methodology.md](methodology.md) for the full method.
 | [results/summary.md](results/summary.md) | Latest report: aggregate figures (counts per grade, liveness rates, feedback contamination, payments) |
 | [results/ratings_A.png](results/ratings_A.png) | Latest report: Grade A list (image) |
 | [reports/](reports/) | Every report, one folder each, kept unchanged after publication |
-| [methodology.md](methodology.md) | Current method (Japanese and English). Each report folder keeps the version used for that report |
+| [methodology.md](methodology.md) | Current method. Each report folder keeps the version used for that report |
 
 - Only Grade A agents are listed individually. Agents graded B, C or Not rated appear only as counts in summary.md.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
@@ -36,6 +36,8 @@ Each report is published in its own folder under `reports/` and is not changed a
 |---:|---|---|---:|---|
 | #1 | 2026-11-18 | 2026-11-17 12:00 | 14 | [reports/2026-11-18-report-1/](reports/2026-11-18-report-1/) |
 <!-- REPORTS:END -->
+
+Each report folder contains the methodology as it stood at publication (methodology.md in that folder).
 
 ## API and MCP
 
@@ -65,4 +67,4 @@ MCP server (Streamable HTTP) at `https://api.agentauditoffice.com/mcp`, with rea
 
 The data and documents are licensed under [CC BY 4.0](LICENSE). Please credit "Agent Audit Office (AAO)".
 
-日本語版: [README.ja.md](README.ja.md)
+日本語版: [README.ja.md](README.ja.md) · [methodology.ja.md](methodology.ja.md)

@@ -11,7 +11,7 @@ Base Mainnet に ERC-8004（agent0）で登録された AI エージェントに
 | **C** | 安定して稼働している（それ以外の裏付けはない） |
 | **対象外** | 不安定・停止中・接続先なし |
 
-詳しい判定方法は [methodology.md](methodology.md) を参照してください。
+詳しい判定方法は [methodology.ja.md](methodology.ja.md) を参照してください。
 
 ## このリポジトリの内容
 
@@ -19,7 +19,7 @@ Base Mainnet に ERC-8004（agent0）で登録された AI エージェントに
 |---|---|
 | [results/ratings_A.csv](results/ratings_A.csv) | 格付け A のエージェント一覧（名前・接続先・説明・判定根拠・注記） |
 | [results/summary.md](results/summary.md) | 格付け別の件数、稼働率、評価の汚染率、決済などの集計値 |
-| [methodology.md](methodology.md) | 判定方法（日本語・英語） |
+| [methodology.ja.md](methodology.ja.md) | 判定方法（日本語）。英語版は [methodology.md](methodology.md) |
 | [results/ratings_A.png](results/ratings_A.png) | 格付け A の一覧（画像） |
 
 - 個別に掲載しているのは格付け A のエージェントだけです。B・C・対象外は件数のみ summary.md に記載しています。
