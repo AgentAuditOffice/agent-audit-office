@@ -26,6 +26,30 @@ See [methodology.md](methodology.md) for the full method.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
 - Please report errors through GitHub Issues or to contact@agentauditoffice.com.
 
+## API and MCP
+
+Free and read-only, with no sign-up, API key or cookies. Every response includes the report, its reference time (`as_of`), the methodology link and the license.
+
+REST API (`https://api.agentauditoffice.com`):
+
+| Request | Returns |
+|---|---|
+| `GET /v1/agents/{chainId}:{agentId}` (e.g. `/v1/agents/8453:45250`) | Grade A details, or `"status": "not_listed"` |
+| `GET /v1/grade-a` | All Grade A agents |
+| `GET /v1/summary` | Report figures |
+
+Only Grade A agents are listed individually. Any other valid ID returns `not_listed`; not being listed does not mean an agent is untrustworthy. Malformed IDs return HTTP 400. Responses are cached and requests are rate-limited per IP.
+
+MCP server (Streamable HTTP) at `https://api.agentauditoffice.com/mcp`, with read-only tools `lookup_agent`, `list_grade_a` and `get_report_summary`:
+
+```json
+{
+  "mcpServers": {
+    "agent-audit-office": { "type": "http", "url": "https://api.agentauditoffice.com/mcp" }
+  }
+}
+```
+
 ## License
 
 The data and documents are licensed under [CC BY 4.0](LICENSE). Please credit "Agent Audit Office (AAO)".
