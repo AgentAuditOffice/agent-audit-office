@@ -93,15 +93,46 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 - **観測の起動方法の変更（2026-11-20 以降）**: 2026-11-20 以降の定点観測は、Cloudflare Workers の Cron（UTC 23:07 / 5:07 / 11:07 = 日本時間 8:07 / 14:07 / 20:07）が GitHub Actions のワークフローを起動して行う。GitHub Actions の定期実行（schedule）で起きていた遅延・欠落を減らすため。観測の内容（リクエスト・判定の方法）は変えていない。初回レポートの観測（2026-11-17 21:26 開始の回まで）はすべて変更前の方法による。
 - **試運転（2026-11-14）** は観測 1〜2 回分しかなく、観測時点 6 以上の条件を満たすエージェントがいないため、`--min-runs` で下限を一時的に下げて実行した。本番の判定は定点観測の終了後に、下限 6 時点のまま行う。
 
-### 6. 次回からの変更予定
+### 6. Report #2 からの変更
 
-- **A の条件の追加**: 「第三者からの支払いが、異なる 3 日以上（UTC の暦日）にわたること」を加える。短期間にまとめて行われた支払いだけで A になることを防ぐため。初回レポートの判定には適用していない。
+#### 6.1 確定: クラスター・ネットワーク内の評価の除外（Report #2 から適用）
+
+所有者の異なる多数のエージェントが同じ接続先を共有し、互いに評価し合うことで「健全な評価」の条件を満たしてしまう例が見つかった。Report #2 から、次のルールで該当する評価を健全な評価から除外する。
+
+**URL の正規化** — 接続先の URL は、前後の空白を除き、小文字にし、クエリとフラグメント、既定のポート、末尾のスラッシュを除いてから比べる。
+
+**クラスター** — 次のどちらかに当てはまるエージェントのまとまり。
+
+- **URL クラスター**: 正規化した接続先 URL が同じで、所有者（owner）の異なるエージェントが **3 体以上**。
+- **ホストクラスター**: 接続先のホストが同じで（パスだけ違うものを含む）、所有者の異なるエージェントが **3 体以上**。ただし、コード共有サイト、SNS、ブロックエクスプローラー、IPFS ゲートウェイなど、無関係なプロジェクトが多数同居する共用ホストは除く。
+
+**ネットワーク** — ホストクラスターどうしで、一方のメンバーが他方のエージェントに送った評価が **5 件以上**あれば 2 つを結び、結ばれて 2 クラスター以上になったまとまり。数えるのは、ほかの絞り込み（3 節の健全な評価の 1〜5）の後に残った評価。大手サイトのトップページなど、仮の値として登録されがちな URL のホストは、ネットワークの検出に使わない。
+
+**メンバー** — クラスターやネットワークに属するエージェントの owner と agentWallet。
+
+**除外のルール** — 送り手が、評価先のエージェントと同じクラスターまたは同じネットワークのメンバーである評価は、健全な評価から除く。異なる送り手 3 人以上という条件は、この除外の後で判定する。
+
+**感度分析（Report #1 のデータで試算）** — ネットワークを結ぶ評価の件数を変えて比べた。対象は Report #1 の B 238 体のうち、健全な評価が根拠の 225 体。
+
+| ネットワークを結ぶ件数 | ネットワーク | 含まれるクラスター | エージェント | B から外れる |
+|---:|---:|---:|---:|---:|
+| 3 件 | 4 | 16 | 1,046 | 208 |
+| **5 件（採用）** | **2** | **12** | **862** | **208** |
+| 10 件 | 2 | 12 | 862 | 208 |
+| 参考: クラスター内のみ（ネットワークなし） | – | – | – | 1 |
+
+しきい値を 3〜10 件で変えても、B から外れるエージェントは同じ 208 体で、結果は安定している。クラスターの中だけを見る除外では 1 体しか外れず、クラスターをまたいで評価し合う構造をとらえるにはネットワーク単位の除外が必要。Report #1 のデータに当てはめると B は 238 体から 30 体になり、外れる 208 体はいずれも C になる。
+
+このルールは Report #1 の格付けには適用していない（Report #1 の結果は変わらない）。
+
+#### 6.2 予定・検討中（未確定）
+
+- **A の条件の追加**: 「第三者からの支払いが、異なる 3 日以上（UTC の暦日）にわたること」を加える。短期間にまとめて行われた支払いだけで A になることを防ぐため。
 - **注記の追加（支払人の偏り）**: 上位 1 人の支払人が、受取額の 50% を超える場合は注記する。
 - **注記の追加（新しい財布）**: 支払人のうち、そのエージェントへの初回支払いの 7 日前以降に作られた財布の割合が 50% を超える場合は注記する。財布の作成日は、自分で送った最初のトランザクション・スマートウォレットのデプロイ・最初の x402 支払いのうち最も早い日とする（入金を受けただけの日は含まない）。
 - **A の条件の追加を検討**: 「基準時刻前 30 日以内に、第三者からの支払いがあること」。過去の支払いだけで、現在は使われていないエージェントが A になることを防ぐため。
-- **評価の絞り込みの追加を検討**: 所有者の異なる複数のエージェントが同じ接続先を共有するクラスターを検出し、その評価を健全な評価から除外することを検討する。
 
-以上の変更予定は、初回レポートの格付けと注記には適用していない。
+以上の予定は、Report #1 の格付けと注記には適用していない。
 
 ---
 
@@ -190,12 +221,43 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 - **Change in how observations are started (from 2026-11-20)**: from 2026-11-20, observation runs are started by a Cloudflare Workers Cron (23:07 / 05:07 / 11:07 UTC = 08:07 / 14:07 / 20:07 JST), which triggers the GitHub Actions workflow. This replaces GitHub Actions scheduled runs to reduce delays and skipped runs. What each run requests and how it judges are unchanged. All observations in the first report (up to the run that started at 21:26 JST on 2026-11-17) used the previous method.
 - **The trial runs (2026-11-14)** had only 1–2 observation runs, so no agent met the minimum of 6 observation points. They were run with `--min-runs` to lower the minimum temporarily. The production rating runs after the observation period with the minimum kept at 6 points.
 
-### 6. Planned changes for the next report
+### 6. Changes from Report #2
 
-- **Additional condition for grade A**: third-party payments must span **at least 3 distinct days** (UTC calendar days). This keeps payments bunched into a short burst from being enough for an A. It was not applied to the first report.
+#### 6.1 Confirmed: excluding feedback within clusters and networks (applies from Report #2)
+
+We found many agents with different owners that share the same endpoints and rate one another, which let them meet the "healthy feedback" condition. From Report #2, such feedback is excluded from healthy feedback under the following rules.
+
+**URL normalization** — endpoint URLs are compared after trimming whitespace, lowercasing, and removing the query, fragment, default port and trailing slash.
+
+**Cluster** — a group of agents that meets either condition:
+
+- **URL cluster**: the same normalized endpoint URL is registered by **at least 3** agents with different owners.
+- **Host cluster**: the same endpoint host (including different paths on that host) is registered by **at least 3** agents with different owners. Shared hosts where many unrelated projects live (code-hosting sites, social networks, block explorers, IPFS gateways and similar) are excluded.
+
+**Network** — two host clusters are linked when the members of one sent **at least 5** feedback records to the agents of the other. Linked groups of two or more clusters form a network. Only feedback that remains after the other filters (items 1–5 under healthy feedback in section 3) is counted. Hosts of URLs that are often entered as placeholders, such as the front pages of major websites, are not used to detect networks.
+
+**Members** — the owners and agentWallets of the agents in a cluster or network.
+
+**Exclusion rule** — feedback whose sender is a member of the same cluster or the same network as the rated agent is removed from healthy feedback. The "at least 3 distinct senders" condition is checked after this removal.
+
+**Sensitivity analysis (on Report #1 data)** — we varied the number of feedback records needed to link two clusters. The test set was the 225 of Report #1's 238 B agents whose grade rested on healthy feedback.
+
+| Records needed to link | Networks | Clusters in networks | Agents | B agents losing their basis |
+|---:|---:|---:|---:|---:|
+| 3 | 4 | 16 | 1,046 | 208 |
+| **5 (adopted)** | **2** | **12** | **862** | **208** |
+| 10 | 2 | 12 | 862 | 208 |
+| Reference: within clusters only (no networks) | – | – | – | 1 |
+
+From 3 to 10 records, the same 208 agents lose their healthy-feedback basis, so the result is stable. Excluding feedback only within single clusters removes just 1, so network-level exclusion is needed to catch agents rating each other across clusters. Applied to Report #1 data, B would fall from 238 to 30 agents, and all 208 agents removed from B would be graded C.
+
+This rule was not applied to Report #1, and Report #1's grades are unchanged.
+
+#### 6.2 Planned or under consideration (not yet confirmed)
+
+- **Additional condition for grade A**: third-party payments must span **at least 3 distinct days** (UTC calendar days). This keeps payments bunched into a short burst from being enough for an A.
 - **New note (payer concentration)**: add a note when the top payer accounts for more than 50% of the amount received.
 - **New note (new wallets)**: add a note when more than 50% of payers used wallets created within 7 days before their first payment to the agent. A wallet's creation date is the earliest of its first self-sent transaction, its smart-wallet deployment, and its first x402 payment; merely receiving funds does not count.
 - **Under consideration for grade A**: require at least one third-party payment within 30 days before the reference time. This keeps agents that are no longer used from earning an A on past payments alone.
-- **Under consideration for the feedback filters**: detect clusters of agents with different owners that share the same endpoints, and exclude their feedback from healthy feedback.
 
-None of these planned changes were applied to the first report's grades or notes.
+None of these planned changes were applied to Report #1's grades or notes.
