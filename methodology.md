@@ -95,7 +95,22 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 
 ### 6. Report #2 からの変更
 
-#### 6.1 確定: クラスター・ネットワーク内の評価の除外（Report #2 から適用）
+#### 6.1 確定: Report #2 の観測期間と基準時刻
+
+データの確定前に、次のとおり決めて公開する。
+
+| 項目 | Report #2 |
+|---|---|
+| 観測 | 2026-11-17 21:26（日本時間）より後に始まった回から、2026-11-24 21:00（日本時間）までに始まった回。Report #1 の観測とは重ならない |
+| 基準時刻 | 2026-11-24 12:00 UTC（日本時間 21:00） |
+| 過去 90 日の支払い | 2026-08-26 12:00 〜 2026-11-24 12:00 UTC |
+| 直近 30 日の支払い（集計用） | 2026-10-25 12:00 〜 2026-11-24 12:00 UTC |
+| 公開予定 | 2026-11-25 22:00（日本時間） |
+| 安定稼働の条件 | Report #1 と同じ（前の回の開始から 60 分以内に始まった回を 1 つの観測時点にまとめ、観測時点 6 以上 かつ 生存率 7/9 以上） |
+
+観測は 1 日 3 回（日本時間 8:07 / 14:07 / 20:07）の予定で、2026-11-20 以降は Cloudflare Workers の Cron が起動する（5 節）。観測の締め切り（2026-11-24 21:00 日本時間）は基準時刻と同じ時刻で、Report #2 では基準時刻より後に始まった観測は使わない。
+
+#### 6.2 確定: クラスター・ネットワーク内の評価の除外（Report #2 から適用）
 
 所有者の異なる多数のエージェントが同じ接続先を共有し、互いに評価し合うことで「健全な評価」の条件を満たしてしまう例が見つかった。Report #2 から、次のルールで該当する評価を健全な評価から除外する。
 
@@ -125,7 +140,7 @@ x402 サブグラフは The Graph の公式ドキュメントではなく第三�
 
 このルールは Report #1 の格付けには適用していない（Report #1 の結果は変わらない）。
 
-#### 6.2 予定・検討中（未確定）
+#### 6.3 予定・検討中（未確定）
 
 - **A の条件の追加**: 「第三者からの支払いが、異なる 3 日以上（UTC の暦日）にわたること」を加える。短期間にまとめて行われた支払いだけで A になることを防ぐため。
 - **注記の追加（支払人の偏り）**: 上位 1 人の支払人が、受取額の 50% を超える場合は注記する。
@@ -223,7 +238,22 @@ Mutual and self-rating are evaluated **per owner**. A sender address maps to the
 
 ### 6. Changes from Report #2
 
-#### 6.1 Confirmed: excluding feedback within clusters and networks (applies from Report #2)
+#### 6.1 Confirmed: Report #2 observation period and reference time
+
+These were fixed and published before the data is final.
+
+| Item | Report #2 |
+|---|---|
+| Observations | Runs that started after 2026-11-17 21:26 JST and no later than 2026-11-24 21:00 JST. They do not overlap with Report #1's observations |
+| Reference time | 2026-11-24 12:00 UTC (21:00 JST) |
+| 90-day payment window | 2026-08-26 12:00 to 2026-11-24 12:00 UTC |
+| 30-day payment window (for the summary) | 2026-10-25 12:00 to 2026-11-24 12:00 UTC |
+| Planned publication | 2026-11-25 22:00 JST |
+| Stability rule | Same as Report #1 (runs that start within 60 minutes of the previous run form one observation point; at least 6 observation points and alive at 7/9 or more of them) |
+
+Observations are scheduled three times a day (08:07 / 14:07 / 20:07 JST); from 2026-11-20 they are started by a Cloudflare Workers Cron (section 5). The observation cutoff (2026-11-24 21:00 JST) is the same moment as the reference time, so Report #2 uses no observations that started after the reference time.
+
+#### 6.2 Confirmed: excluding feedback within clusters and networks (applies from Report #2)
 
 We found many agents with different owners that share the same endpoints and rate one another, which let them meet the "healthy feedback" condition. From Report #2, such feedback is excluded from healthy feedback under the following rules.
 
@@ -253,7 +283,7 @@ From 3 to 10 records, the same 208 agents lose their healthy-feedback basis, so 
 
 This rule was not applied to Report #1, and Report #1's grades are unchanged.
 
-#### 6.2 Planned or under consideration (not yet confirmed)
+#### 6.3 Planned or under consideration (not yet confirmed)
 
 - **Additional condition for grade A**: third-party payments must span **at least 3 distinct days** (UTC calendar days). This keeps payments bunched into a short burst from being enough for an A.
 - **New note (payer concentration)**: add a note when the top payer accounts for more than 50% of the amount received.
