@@ -17,14 +17,25 @@ See [methodology.md](methodology.md) for the full method.
 
 | File | Description |
 |---|---|
-| [results/ratings_A.csv](results/ratings_A.csv) | Agents graded A (name, endpoints, description, evidence, notes) |
-| [results/summary.md](results/summary.md) | Aggregate figures: counts per grade, liveness rates, feedback contamination, payments |
-| [methodology.md](methodology.md) | Method (Japanese and English) |
-| [results/ratings_A.png](results/ratings_A.png) | Grade A list (image) |
+| [results/ratings_A.csv](results/ratings_A.csv) | Latest report: agents graded A (name, endpoints, description, evidence, notes) |
+| [results/summary.md](results/summary.md) | Latest report: aggregate figures (counts per grade, liveness rates, feedback contamination, payments) |
+| [results/ratings_A.png](results/ratings_A.png) | Latest report: Grade A list (image) |
+| [reports/](reports/) | Every report, one folder each, kept unchanged after publication |
+| [methodology.md](methodology.md) | Current method (Japanese and English). Each report folder keeps the version used for that report |
 
 - Only Grade A agents are listed individually. Agents graded B, C or Not rated appear only as counts in summary.md.
 - Ratings are automated, based on public on-chain data and HTTP requests to each endpoint. They are not investment or trading advice.
 - Please report errors through GitHub Issues or to contact@agentauditoffice.com.
+
+## Reports
+
+Each report is published in its own folder under `reports/` and is not changed afterwards. `results/` always holds a copy of the latest report.
+
+<!-- REPORTS:START -->
+| Report | Published | Reference time (UTC) | Grade A | Files |
+|---:|---|---|---:|---|
+| #1 | 2026-11-18 | 2026-11-17 12:00 | 14 | [reports/2026-11-18-report-1/](reports/2026-11-18-report-1/) |
+<!-- REPORTS:END -->
 
 ## API and MCP
 
