@@ -1,6 +1,7 @@
 # Rating Methodology
 
 Scope: ERC-8004 (agent0) agents registered on Base Mainnet.  
+From Report #3: also Ethereum (chainId 1) and BNB Chain (chainId 56); see section 7.  
 Script: `score.py` (all thresholds live in the `CONFIG` block at the top).  
 Japanese version: [methodology.ja.md](methodology.ja.md)
 
@@ -142,3 +143,185 @@ This rule was not applied to Report #1, and Report #1's grades are unchanged.
 - **Under consideration for grade A**: require at least one third-party payment within 30 days before the reference time. This keeps agents that are no longer used from earning an A on past payments alone.
 
 None of these planned changes were applied to Report #1's grades or notes.
+
+## 7. Report #3 and later: Ethereum and BNB Chain
+
+Published 2026-11-21, before any Report #3 data is final. These rules apply from Report #3. Report #1 and Report #2 are not affected. A Japanese translation is in [methodology.ja.md](methodology.ja.md); if the two differ, this English version takes precedence.
+
+### 7.1 Changes from Report #2 (all chains, Base included)
+
+From Report #3, these changes also apply to Base. Report #2 is not affected.
+
+1. **Clusters and networks are detected across all three chains together** (7.7.1). This was decided on principle. Its effect on Base was not measured before the rule was fixed.
+2. **Mutual rating and self-rating are matched against all three registries combined** (7.7.2).
+3. **Two host lists with separate effects** (7.8):
+   - **Not judged:** basescan.org, bscscan.com, etherscan.io and 8004scan.io (each with its `www.` form) are added. They are still probed, but their results are treated as `excluded` in grading, the same as github.com. They are also not used for host clusters.
+   - **Shared hosting:** the AWS AgentCore endpoint `bedrock-agentcore.us-east-1.amazonaws.com` is added. It is still probed and judged, but it is not used for host clusters.
+4. **Revoked feedback is excluded** from healthy feedback (7.5).
+
+### 7.2 Scope
+
+From Report #3, ERC-8004 (agent0) agents on three chains are rated:
+
+| Chain | chainId | agent0 subgraph (The Graph Network) |
+|---|---:|---|
+| Base | 8453 | `43s9hQRurMGjuYnC1r2ZwS6xSQktbFyXMPMqGKUFJojb` |
+| Ethereum | 1 | `FV6RR6y13rsnCxBAicKuQEwDp8ioEGiNaWaZUmvr1F8k` |
+| BNB Chain | 56 | `D6aWqowLkWqBgcqmpNKXuNikPkob24ADXCciiP8Hvn1K` |
+
+Subgraph IDs come from the agent0 subgraph repository (github.com/agent0lab/subgraph) and The Graph's documentation.
+
+- Each chain is rated separately. An agent is identified by `chainId:agentId`. If the same project registers on several chains, each registration is rated on its own, using only that chain's data, except for the cross-chain checks in 7.7.
+- Results are reported per chain. Chains are not merged into one ranking.
+
+### 7.3 Report #3 schedule
+
+These values are fixed now, before the data is final.
+
+| Item | Report #3 |
+|---|---|
+| Reference time (as_of) | 2026-12-01 12:00 UTC (21:00 JST) |
+| Base observations | Runs that started after 2026-11-24 21:00 JST and no later than 2026-12-01 21:00 JST (no overlap with Report #2) |
+| Ethereum / BNB Chain observations | From the first scheduled GitHub Actions run that included these chains (scheduled for 2026-11-21 20:07 JST, started by the Cloudflare Workers Cron) to runs that started no later than 2026-12-01 21:00 JST |
+| 90-day payment window (Base only) | 2026-09-02 12:00 to 2026-12-01 12:00 UTC |
+| 30-day payment window (Base only, for the summary) | 2026-11-01 12:00 to 2026-12-01 12:00 UTC |
+| Planned publication | 2026-12-02 22:00 JST |
+
+- Observation points expected by the cutoff if no run is missed (three runs a day at 08:07 / 14:07 / 20:07 JST): **Base 21, Ethereum 31, BNB Chain 31**. Missed runs reduce these numbers. The stability rule already requires at least 6 points, so a few missed runs do not change how stability is judged.
+- The one-off Ethereum and BNB Chain runs on 2026-11-21 at 14:32 and 14:33 JST are excluded. They were started by hand from a development environment through a proxy, not from GitHub Actions.
+- Ethereum and BNB Chain are probed in the same GitHub Actions run as Base, right after it, and each chain's run is a separate file. Runs are merged into observation points within each chain only.
+
+### 7.4 Data sources
+
+| Data | Base | Ethereum | BNB Chain |
+|---|---|---|---|
+| Agent registry | agent0 subgraph (7.2) | agent0 subgraph (7.2) | agent0 subgraph (7.2) |
+| Endpoint liveness | `probe.py` | `probe.py` via `probe_chain.py` (same code, criteria and safety rules) | same as Ethereum |
+| x402 payments | x402 Base subgraph (`Cb56epg3…`), sample-checked against RPC receipts | **None available** | **None available** |
+| Feedback | agent0 `Feedback` entity | agent0 `Feedback` entity (same fields as Base) | agent0 `Feedback` entity (same fields as Base) |
+
+**Candidate lists (fixed for Report #3).** Ethereum and BNB Chain candidates are the agents that, on 2026-11-21 (about 05:30 UTC), had at least one MCP / A2A / Web / OASF endpoint or `x402Support = true`. This is the same rule as Base. These lists stay fixed through Report #3, so agents registered later are not observed in Report #3. The Base list is also fixed. Any refresh will be announced for a later report.
+
+### 7.5 Rules that apply on every chain
+
+These rules are the same as for Base, and each is applied to one chain's data. The only exceptions are the cross-chain checks in 7.7 and the host lists in 7.8.
+
+- liveness per observation (v3 criteria, section 2), with the host lists in 7.8
+- a run counts as a full run with at least 1,000 endpoint rows; Ethereum and BNB Chain each have about 2,700–2,900 rows per run
+- observation points (runs within 60 minutes merged; at a merged point, alive only if alive in every run of that point)
+- **Stable**: at least 6 observation points, and alive at 7/9 or more of them
+- **Healthy feedback**: at least 3 distinct senders remain after removing:
+  0. **revoked feedback** (`isRevoked = true` in the data fetched for the report). New from Report #3, on all chains.
+  1. records tagged `miner-vouch` or `botcoin`
+  2. values outside 0–100
+  3. all feedback from senders with 10 or more records in one hour
+  4. mutual rating (7.7.2)
+  5. self-rating (7.7.2)
+
+  Filter 0 runs first, so revoked records also do not count toward the burst rule (filter 3) or mutual rating (filter 4).
+- exclusion of feedback within clusters and networks (section 6.2: 3 owners for a cluster, 5 feedback records to link two clusters), detected across all chains (7.7.1)
+
+### 7.6 Grades on Ethereum and BNB Chain
+
+Evaluated top to bottom; the first match wins.
+
+| Grade | Condition |
+|---|---|
+| **A** | **Not available on this chain.** Grade A requires verified x402 payments from at least 3 distinct third parties, and there is no verified x402 payment data for this chain (7.9) |
+| **B** | Stable + (an endpoint judged alive_paid during the observation period, or healthy feedback) |
+| **C** | Stable only |
+| **Not rated** | Everything else (unstable, dead, or no judged endpoint) |
+
+- The B, C and Not rated conditions are the same as on Base.
+- No substitute for payment data is used. Payments on Base are never counted for an Ethereum or BNB Chain agent, even when both use the same wallet address. Neither `x402Support = true` nor an HTTP 402 response is treated as a payment.
+- "alive_paid" means the endpoint answered with x402 payment terms, as on Base. The probe does not check which network the terms name.
+
+**Presentation.** Only Grade A agents are named individually.
+
+- Report #3 shows one aggregate table per chain: the counts of B, C and Not rated, with A shown as **"not available"** and the line "Grade A is not available on this chain (no verified x402 payment data)".
+- No Ethereum or BNB Chain agent is named. The API returns `not_listed` for these agents.
+- **Fallback:** a chain with fewer than 6 observation points at the cutoff is left out of Report #3. The report says so, and the chain starts in a later report.
+
+**Base in Report #3.** Base grades A to C follow the Report #2 rules, with the changes listed in 7.1. Planned items in section 6.3 apply only if they are confirmed and published before Report #3 data is final.
+
+### 7.7 Cross-chain checks
+
+1. **Clusters and networks: all three chains together.**
+   - URL and host clusters count owners across Base, Ethereum and BNB Chain.
+   - A cluster's members are the owners and agentWallets of its agents on every chain.
+   - Network links count feedback on any chain.
+   - Feedback is excluded when its sender is a member of the same cluster or network as the rated agent, whichever chain the sender's own agent is on.
+   - Agent IDs include the chainId, so the same agentId on two chains is never mixed up.
+2. **Mutual rating and self-rating: all three registries combined.** A sender address is mapped to every owner it represents, as an owner or as an agentWallet, on any of the three chains. Both the mutual-rating pairs (filter 4) and the self-rating check (filter 5) use this combined map. Mutual-rating pairs are found from the feedback on all three chains. For example, if owner X rates owner Y on Ethereum and Y rates X on Base, the pair is mutual on both chains.
+3. **One A per shared wallet: per chain.** Only agents on the same chain are grouped by agentWallet. In Report #3 only Base can have Grade A, so this has no cross-chain effect. It will be revisited when a second chain has payment data.
+
+### 7.8 Host lists
+
+**How it works up to Report #2.** There are two separate lists:
+
+- **Not probed:** github.com and its subdomains. The probe never requests these endpoints, including redirect targets, and records them as `excluded` (not judged). github.com is also on the shared-host list below.
+- **Shared hosts** (section 6.2): code hosting, social networks, block explorers, IPFS gateways and similar. These hosts are still probed and judged as usual. They are only left out when **host** clusters are built, and the host must match exactly. URL clusters (the same full URL from 3 or more owners) still include them.
+
+basescan.org and etherscan.io are on the shared-host list only, so up to Report #2 they are probed and judged.
+
+**From Report #3 (all chains, Base included)**, three host groups:
+
+| Group | Hosts | Probed? | Judged in grading? | Used for host clusters? |
+|---|---|---|---|---|
+| **Not judged** (not the agent's own service) | github.com (existing), basescan.org, www.basescan.org, bscscan.com, www.bscscan.com, etherscan.io, www.etherscan.io, 8004scan.io, www.8004scan.io | Yes, except github.com (unchanged) | **No.** Results are treated as `excluded`, the same as github.com | No |
+| **Shared hosting** | the existing shared-host list, plus `bedrock-agentcore.us-east-1.amazonaws.com` | Yes | Yes | No |
+| Everything else | — | Yes | Yes | Yes |
+
+- **Not judged** covers the listed host **and its subdomains** (e.g. api.etherscan.io).
+  - The probe keeps requesting these hosts, so the raw observation data stays complete. Report #2's observations are not affected.
+  - In grading, a result is treated as `excluded` when its request URL or its final URL after redirects is on one of these hosts.
+  - An agent whose only endpoints are on these hosts has no judged endpoint and is Not rated.
+- **Shared hosting** matches the exact host only, as today.
+- **URL clusters are unchanged.** As today, the same full URL from 3 or more owners forms a URL cluster on any host.
+- The placeholder hosts of section 6.2 are unchanged: they can form clusters but are not used to link networks.
+
+### 7.9 Enabling Grade A on another chain
+
+Grade A becomes available on Ethereum or BNB Chain only after all of the following:
+
+1. A source of x402 payments on that chain is identified, giving payer, recipient, amount and time per payment.
+2. A sample of at least 25 payments matches that chain's transaction receipts (recipient, amount, payer), as was done for Base (`verify_payments.py`).
+3. The source and the sample result are published in `methodology.md` before the data of the first report that uses them is final.
+
+For BNB Chain, step 1 must also say which settlement methods count as x402 payments. BNB Chain's main stablecoins do not support EIP-3009. Facilitators there settle through wrapped tokens or relay contracts, not through the same contract call as on Base.
+
+### 7.10 Known limitations (Ethereum and BNB Chain)
+
+- **No Grade A** until 7.9 is met. The best available grade is B.
+- **Feedback is dominated by high-volume senders.** The filter for senders with 10 or more in one hour removes about 96% of Ethereum and about 98% of BNB Chain feedback, compared with about 20% on Base. Healthy feedback is therefore a small share of all feedback on these chains.
+- **Smart-contract wallets across chains.** The cross-chain checks (7.7) treat one address as one holder on every chain. That holds for ordinary wallets (EOAs). A smart-contract wallet can exist at the same address on two chains under different control. Such a wallet could be wrongly linked across chains, and feedback from it could be excluded by mistake.
+- **Fixed candidate list.** Agents registered after 2026-11-21 are not observed in Report #3.
+- **Observation network.** Same as Base: observations run from GitHub Actions data-center IPs.
+- **Endpoints on not-judged hosts** (7.8). Many Ethereum and BNB Chain agents list only a github.com OASF link. These agents have no judged endpoint and are Not rated (no judged endpoint), not dead.
+
+### 7.11 Disclosure: results seen before these rules were written
+
+The following Ethereum and BNB Chain results were seen before these rules were written. No grades, stability results or per-agent healthy-feedback counts were computed. The effect of the Report #3 changes on Base was not measured.
+
+- Registry counts from the subgraphs. Ethereum: 56,722 agents, 1,093 with an MCP or A2A endpoint, 4,907 with `x402Support = true`, 2,703 with at least one feedback record. BNB Chain: 420,583 agents, 1,386 with an MCP or A2A endpoint, 14,427 with `x402Support = true`, 4,483 with at least one feedback record.
+- Candidate counts. Ethereum: 6,154 candidates (1,541 with an endpoint; MCP 1,047, A2A 152, Web 1,063, OASF 475). BNB Chain: 16,120 candidates (1,958 with an endpoint; MCP 405, A2A 1,292, Web 816, OASF 411).
+- One manual liveness run per chain on 2026-11-21 at 14:32 and 14:33 JST, excluded from Report #3 (7.3). Ethereum: endpoint liveness 45.6% (1,051 of 2,304 judged), agent liveness 87.0% (995 of 1,144), 0 alive_paid. BNB Chain: endpoint liveness 74.1% (1,853 of 2,499), agent liveness 72.6% (1,327 of 1,829), 2 alive_paid endpoints. The tables shown with these runs also gave per-kind liveness and error types. Why agents with an endpoint were not judged: Ethereum 390 had only github.com endpoints, 4 had invalid URLs and 3 had internal addresses; BNB Chain 114, 8, 4 and 3 (both blocked and github.com).
+- Feedback aggregates after filters 1–5 and network exclusion (Report #2 settings, without the revoked filter), using all feedback to 2026-11-21. Ethereum: 37,723 records, 95.9% excluded (burst senders 95.7%), 0 revoked. BNB Chain: 30,162 records, 98.4% excluded (burst senders 98.1%), 1 revoked. Base: 166 revoked records out of 683,639. Also the most frequent tags and the top-5 senders' share of records.
+- Cross-chain overlap counts: shared owners, shared hosts, shared agentWallets, host clusters per chain and jointly. The most-shared hosts per chain were looked at when choosing the host lists in 7.8.
+
+### 7.12 Summary of decisions (2026-11-21)
+
+| # | Topic | Decision |
+|---|---|---|
+| 1 | Cluster and network detection | All three chains together, from Report #3; effect on Base not measured before publication |
+| 2 | Mutual and self-rating | All three registries combined; smart-contract wallet caveat under 7.10 |
+| 3 | One A per shared wallet | Per chain for now |
+| 4 | Host lists | Not judged: basescan.org, bscscan.com, etherscan.io, 8004scan.io (with `www.`); probed, but treated as `excluded` in grading. Shared hosting: AWS AgentCore endpoint. All chains, from Report #3 |
+| 5 | Candidate lists | Fixed as of 2026-11-21 through Report #3 |
+| 6 | Presentation | Per-chain aggregate table, A shown as "not available"; a chain with fewer than 6 points is left out |
+| 7 | Enabling A on another chain | 7.9 as written |
+| 8 | Revoked feedback | Excluded on all chains from Report #3; Report #2 unchanged |
+
+### 7.13 Implementation
+
+`score.py` has one flag for each new rule in `CONFIG`: `cross_chain_clusters`, `cross_chain_addresses`, `r3_host_groups` and `exclude_revoked_feedback`. All four are off by default, so Report #1 and Report #2 reproduce byte for byte. `score.py --r3-rules on` turns all four on, and `--chain base|eth|bsc` picks the chain to grade. `probe.py` is unchanged.

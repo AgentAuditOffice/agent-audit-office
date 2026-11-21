@@ -37,6 +37,8 @@ Each report is published in its own folder under `reports/` and is not changed a
 | #1 | 2026-11-18 | 2026-11-17 12:00 | 14 | [reports/2026-11-18-report-1/](reports/2026-11-18-report-1/) |
 <!-- REPORTS:END -->
 
+Next: **Report #3** (planned 2026-12-02) will cover Base, Ethereum and BNB Chain. Its rules were published on 2026-11-21 in [methodology.md](methodology.md) (section 7).
+
 Each report folder contains the methodology as it stood at publication (methodology.md in that folder).
 
 ## API and MCP
