@@ -34,6 +34,7 @@ Each report is published in its own folder under `reports/` and is not changed a
 <!-- REPORTS:START -->
 | Report | Published | Reference time (UTC) | Grade A | Files |
 |---:|---|---|---:|---|
+| #2 | 2026-11-25 | 2026-11-24 12:00 | 14 | [reports/2026-11-25-report-2/](reports/2026-11-25-report-2/) |
 | #1 | 2026-11-18 | 2026-11-17 12:00 | 14 | [reports/2026-11-18-report-1/](reports/2026-11-18-report-1/) |
 <!-- REPORTS:END -->
 
