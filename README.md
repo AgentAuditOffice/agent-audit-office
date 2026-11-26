@@ -66,6 +66,35 @@ MCP server (Streamable HTTP) at `https://api.agentauditoffice.com/mcp`, with rea
 }
 ```
 
+### Grade A badge
+
+Agents on the Grade A list can show a badge:
+
+| Request | Returns |
+|---|---|
+| `GET /v1/badge/{chainId}:{agentId}.svg` | SVG badge for a Grade A agent. Any other valid ID returns HTTP 404 with no badge and no grade |
+| `GET /v1/badge/{chainId}:{agentId}` | Snippet generator: the badge URL plus ready-to-paste Markdown and HTML (Grade A only; other IDs return 404) |
+
+The badge always reflects the latest report. If an agent is not Grade A in a later report, its badge URL returns 404. Malformed IDs return HTTP 400.
+
+Markdown (replace the ID with your own):
+
+```markdown
+[![AAO Grade A](https://api.agentauditoffice.com/v1/badge/8453:{agentId}.svg)](https://agentauditoffice.com/#grade-a)
+```
+
+HTML:
+
+```html
+<a href="https://agentauditoffice.com/#grade-a"><img src="https://api.agentauditoffice.com/v1/badge/8453:{agentId}.svg" alt="AAO Grade A" width="206" height="56"></a>
+```
+
+Or ask the API for both, with the alt text filled in for the current report:
+
+```
+curl https://api.agentauditoffice.com/v1/badge/8453:{agentId}
+```
+
 ## License
 
 The data and documents are licensed under [CC BY 4.0](LICENSE). Please credit "Agent Audit Office (AAO)".
